@@ -35,16 +35,24 @@ cd C:\Users\$user\Downloads
 #User verification for backup
 Read-Host "Press enter to proceed with copy"
 
+<#
 rm "C:\Users\$meid\Documents\My Pictures"
 rm "C:\Users\$meid\Documents\My Music"
 rm "C:\Users\$meid\Documents\My Videos"
+#>
+
+#Eliminates Leading Spaces
+$path = "C:\Users\$meid\Documents"
+$files = Get-ChildItem -Path $path -Recurse 
+Foreach($file in $files)
+{Rename-Item -Path $file.FullName -NewName ($file.Name).Trim() -erroraction 'silentlycontinue'} 
 
 #Copies data to Google Drive
+robocopy C:\Users\$meid\Desktop    "G:\My Drive\backup_test\Desktop"   /E /ZB /r:1 /V /W:10 /tee /MT:10 /timfix
+robocopy C:\Users\$meid\Downloads  "G:\My Drive\backup_test\Downloads" /E /ZB /r:1 /V /W:10 /tee /MT:10 /timfix
+robocopy C:\Users\$meid\Documents  "G:\My Drive\backup_test\Documents" /E /ZB /r:1 /V /W:10 /tee /MT:10 /timfix
+robocopy C:\Users\$meid\Pictures   "G:\My Drive\backup_test\Pictures"  /E /ZB /r:1 /V /W:10 /tee /MT:10 /timfix
 
-robocopy C:\Users\$meid\Desktop    "G:\My Drive\backup_test\Desktop"   /E 
-robocopy C:\Users\$meid\Downloads  "G:\My Drive\backup_test\Downloads" /E
-robocopy C:\Users\$meid\Documents  "G:\My Drive\backup_test\Documents" /E
-robocopy C:\Users\$meid\Pictures   "G:\My Drive\backup_test\Pictures"  /E
 
 #Calculates SHA-256 checksum for file integrity and creates file for user verification
 
@@ -53,4 +61,3 @@ cd "C:\Program Files\7-Zip"
 
 #Verifies the process has completed
 Read-Host "Data has been copied sucessfully press Enter to quit"
-
